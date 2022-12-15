@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.ausfaller.examples'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation("org.mongodb:mongodb-driver-legacy:4.7.1")
+    implementation("org.mongodb:mongodb-driver-core:4.7.1")
+    implementation("org.mongodb:mongodb-driver-sync:4.7.1")
+
+    implementation("org.mongodb:bson:4.7.1")
+    implementation("io.github.hakky54:sslcontext-kickstart-for-pem:7.4.8")
+
+    implementation("org.apache.logging.log4j:log4j-core:2.19.0")
+    implementation("org.apache.logging.log4j:log4j-api:2.19.0")
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
