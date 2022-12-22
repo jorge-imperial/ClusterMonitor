@@ -4,6 +4,7 @@ import com.mongodb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Instant;
 import java.util.Random;
 
 public class WorkerThread extends Thread {
@@ -34,6 +35,8 @@ public class WorkerThread extends Thread {
         DB db = mongoClient.getDB("test");
         DBCollection collection = db.getCollection("stocks");
 
+        DBCollection threadCollection = db.getCollection("threads");
+
         // Sleep, connecting every second.
         while (true) {
 
@@ -45,21 +48,37 @@ public class WorkerThread extends Thread {
                 String symbol = generateRandomChars("abcdefghijklmnopqrstuvwxyz", 4);
                 DBObject query = new BasicDBObject("company_symbol", symbol);
                 DBObject doc = collection.findOne(query);
-                //if (doc != null)   logger.info("Found {} : {}", symbol, doc);
+                if (doc != null)
+                    logger.info("Worker {}. Found {} : {}", threadNumber, symbol, doc);
+                else
+                    logger.info("Worker {}: Not found.", threadNumber);
 
+
+                Instant instant = Instant.now();
 
                 // Find and modify
                 symbol = generateRandomChars("abcdefghijklmnopqrstuvwxyz", 4);
                 query = new BasicDBObject("company_symbol", symbol);
                 DBObject modified = collection.findAndModify(query,
-                        new BasicDBObject("$set", new BasicDBObject("ping", 1)));
-                //logger.info("modified: {}", modified);
+                        new BasicDBObject("$set",
+                                new BasicDBObject("ping",  instant).append("worker", threadNumber)));
+                logger.info("Worker {}: modified: {}", threadNumber, modified);
+
+                // Insert
+                WriteResult ins = threadCollection.insert(new BasicDBObject("worker", threadNumber).append("ts", Instant.now()));
+                logger.info("Worker {}: {} ", threadNumber, ins);
             }
             catch (MongoSocketOpenException socketOpenException) {
-                logger.error("Socket: {}", socketOpenException.getMessage());
+                logger.error("Worker {} Socket: {}", threadNumber, socketOpenException.getMessage());
             }
             catch (MongoNodeIsRecoveringException mongoNodeIsRecoveringException) {
-                logger.error("Is recovering: {}", mongoNodeIsRecoveringException.getMessage());
+                logger.error("Worker {} Is recovering: {}", threadNumber, mongoNodeIsRecoveringException.getMessage());
+            }
+            catch (MongoClientException mongoClientException) {
+                logger.error("Worker {} Exception: {}", threadNumber,  mongoClientException.getMessage());
+            }
+            catch (MongoInterruptedException mongoInterruptedException) {
+                logger.error("Worker {} Exception: {}", threadNumber, mongoInterruptedException.getMessage());
             }
         }
     }

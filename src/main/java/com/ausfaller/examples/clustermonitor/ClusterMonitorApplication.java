@@ -27,14 +27,15 @@ import java.util.Properties;
 @EnableAutoConfiguration(exclude = {MongoAutoConfiguration.class})
 public class ClusterMonitorApplication implements CommandLineRunner  {
 
-    private static final int THREAD_COUNT = 100;
+    private static final int THREAD_COUNT = 150;
 
-    List<ServerAddress> atlasMongos = Arrays.asList(new ServerAddress("cs44-shard-00-00.hqulf.mongodb.net", 27016),
-            new ServerAddress("cs44-shard-00-01.hqulf.mongodb.net", 27016),
-            new ServerAddress("cs44-shard-00-02.hqulf.mongodb.net", 27016),
-            new ServerAddress("cs44-shard-01-00.hqulf.mongodb.net", 27016),
-            new ServerAddress("cs44-shard-01-01.hqulf.mongodb.net", 27016),
-            new ServerAddress("cs44-shard-01-02.hqulf.mongodb.net", 27016)
+    List<ServerAddress> atlasMongos = Arrays.asList(
+            new ServerAddress("cluster44-shard-00-00.hqulf.mongodb.net", 27016),
+            new ServerAddress("cluster44-shard-00-01.hqulf.mongodb.net", 27016),
+            new ServerAddress("cluster44-shard-00-02.hqulf.mongodb.net", 27016),
+            new ServerAddress("cluster44-shard-01-00.hqulf.mongodb.net", 27016),
+            new ServerAddress("cluster44-shard-01-01.hqulf.mongodb.net", 27016),
+            new ServerAddress("cluster44-shard-01-02.hqulf.mongodb.net", 27016)
     );
 
     List<ServerAddress> onPremHosts = Arrays.asList(new ServerAddress("76.167.199.164", 37017),
@@ -57,16 +58,16 @@ public class ClusterMonitorApplication implements CommandLineRunner  {
         SpringApplication.run(ClusterMonitorApplication.class, args);
     }
 
-    MongoClient mongoClient = null;
+    MongoClient mongoClient;
     @Override
     public void run(String... args) throws Exception {
 
-        MongoCredential credential = MongoCredential.createScramSha1Credential("user", "admin", "password".toCharArray());
+        MongoCredential credential = MongoCredential.createScramSha1Credential("user", "admin", "P4ssw0rd".toCharArray());
         WorkerThread[] workers = new WorkerThread[THREAD_COUNT];
 
-        Boolean on_prem = true;
+        Boolean on_prem = false;
 
-        if (on_prem == true) {
+        if (on_prem) {
             logger.info("Connecting to on-prem environment");
 
             // We need an SSL context for on-prem environment using self-signed certificates.
