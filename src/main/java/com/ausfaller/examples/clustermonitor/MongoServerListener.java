@@ -61,9 +61,7 @@ public class MongoServerListener implements ServerListener {
                 );
             }
         }
-
         logger.info("Server event {}", event.getNewDescription().getShortDescription());
-
     }
 
     @Override

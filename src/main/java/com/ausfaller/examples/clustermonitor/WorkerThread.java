@@ -44,6 +44,8 @@ public class WorkerThread extends Thread {
                 long count = collection.count();
                 //logger.info("Thread Awake: Document count is {}",  count);
 
+                //Thread.sleep(1000);  // sleep to throttle operations
+
                 // Find operations
                 String symbol = generateRandomChars("abcdefghijklmnopqrstuvwxyz", 4);
                 DBObject query = new BasicDBObject("company_symbol", symbol);
@@ -74,12 +76,13 @@ public class WorkerThread extends Thread {
             catch (MongoNodeIsRecoveringException mongoNodeIsRecoveringException) {
                 logger.error("Worker {} Is recovering: {}", threadNumber, mongoNodeIsRecoveringException.getMessage());
             }
-            catch (MongoClientException mongoClientException) {
+            catch (MongoClientException | MongoInterruptedException mongoClientException) {
                 logger.error("Worker {} Exception: {}", threadNumber,  mongoClientException.getMessage());
             }
-            catch (MongoInterruptedException mongoInterruptedException) {
-                logger.error("Worker {} Exception: {}", threadNumber, mongoInterruptedException.getMessage());
-            }
+
+            //catch (InterruptedException e) {
+            //    throw new RuntimeException(e);
+            //}
         }
     }
 }

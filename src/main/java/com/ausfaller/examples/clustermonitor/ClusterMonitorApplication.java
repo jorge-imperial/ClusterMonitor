@@ -38,12 +38,13 @@ public class ClusterMonitorApplication implements CommandLineRunner  {
             new ServerAddress("cluster44-shard-01-02.hqulf.mongodb.net", 27016)
     );
 
-    List<ServerAddress> onPremHosts = Arrays.asList(new ServerAddress("76.167.199.164", 37017),
-            new ServerAddress("76.167.199.164", 37018),
-            new ServerAddress("76.167.199.164", 37019),
-            new ServerAddress("76.167.199.164", 37020),
-            new ServerAddress("76.167.199.164", 37021),
-            new ServerAddress("76.167.199.164", 37022)
+    List<ServerAddress> onPremHosts = Arrays.asList(
+            new ServerAddress("m04.ausfaller.com", 27016),
+            new ServerAddress("m05.ausfaller.com", 27016),
+            new ServerAddress("m06.ausfaller.com", 27016),
+            new ServerAddress("m07.ausfaller.com", 27016),
+            new ServerAddress("m08.ausfaller.com", 27016),
+            new ServerAddress("m09.ausfaller.com", 27016)
     );
 
     private static Logger logger = LogManager.getLogger(ClusterMonitorApplication.class);
@@ -62,10 +63,10 @@ public class ClusterMonitorApplication implements CommandLineRunner  {
     @Override
     public void run(String... args) throws Exception {
 
-        MongoCredential credential = MongoCredential.createScramSha1Credential("user", "admin", "P4ssw0rd".toCharArray());
+        MongoCredential credential = MongoCredential.createScramSha1Credential("root", "admin", "P4ssw0rd".toCharArray());
         WorkerThread[] workers = new WorkerThread[THREAD_COUNT];
 
-        Boolean on_prem = false;
+        Boolean on_prem = true;
 
         if (on_prem) {
             logger.info("Connecting to on-prem environment");
